@@ -1,0 +1,230 @@
+{
+  "agent": "ai_engineer",
+  "task_id": "task_0003",
+  "deliverable": "ai_strategy_and_prompts",
+  "reasoning_chains": [
+    {
+      "name": "Concept Explanation Chain",
+      "purpose": "Explain AI strategy concepts to students",
+      "pattern": "RAG + Chain-of-Thought",
+      "steps": [
+        "1. Identify core concept from student question",
+        "2. Retrieve relevant course materials from vector DB",
+        "3. Retrieve student's prior interactions to understand level",
+        "4. Generate explanation using chain-of-thought reasoning",
+        "5. Include relevant examples from course materials",
+        "6. Add follow-up questions to check understanding"
+      ],
+      "example_flow": "Student asks 'What is AI-first strategy?' \u2192 Retrieve course module on AI-first \u2192 Check student completed previous modules \u2192 Generate explanation with real-world examples \u2192 Suggest follow-up questions"
+    },
+    {
+      "name": "Case Study Analysis Chain",
+      "purpose": "Provide feedback on student case study analyses",
+      "pattern": "Multi-step Reasoning + Rubric Evaluation",
+      "steps": [
+        "1. Parse student's case study analysis",
+        "2. Retrieve case study details and evaluation rubric",
+        "3. Evaluate analysis against rubric criteria",
+        "4. Identify strengths and areas for improvement",
+        "5. Generate specific, actionable feedback",
+        "6. Provide score with justification"
+      ]
+    },
+    {
+      "name": "Socratic Tutoring Chain",
+      "purpose": "Guide students to discover answers through questions",
+      "pattern": "Iterative Questioning",
+      "steps": [
+        "1. Identify student's misconception or knowledge gap",
+        "2. Generate probing question to guide thinking",
+        "3. Evaluate student's response",
+        "4. Provide hint if student is stuck",
+        "5. Repeat until student reaches insight",
+        "6. Reinforce learning with summary"
+      ]
+    }
+  ],
+  "prompt_templates": {
+    "concept_explanation": {
+      "template": "You are an expert AI Strategy tutor for graduate students. A student has asked about the following concept:\n\nQuestion: {question}\n\nRelevant Course Materials:\n{retrieved_context}\n\nStudent Background:\n- Completed modules: {completed_modules}\n- Current knowledge level: {student_level}\n- Previous related questions: {related_questions}\n\nYour task:\n1. Explain the concept clearly at a graduate level\n2. Connect to real-world business examples\n3. Reference specific course materials where appropriate\n4. Check for understanding with follow-up questions\n\nRequirements:\n- Be concise but thorough (200-300 words)\n- Use business examples from companies like Google, Amazon, Microsoft\n- Avoid jargon without explanation\n- Encourage critical thinking\n\nProvide your response in this format:\n[Explanation]\n[Examples]\n[Follow-up Questions]",
+      "variables": [
+        "question",
+        "retrieved_context",
+        "completed_modules",
+        "student_level",
+        "related_questions"
+      ]
+    },
+    "case_study_feedback": {
+      "template": "You are evaluating a graduate student's analysis of an AI strategy case study.\n\nCase Study: {case_title}\nCase Context: {case_context}\n\nStudent's Analysis:\n{student_analysis}\n\nEvaluation Rubric:\n{rubric}\n\nYour task:\n1. Evaluate the analysis against each rubric criterion\n2. Identify what the student did well\n3. Identify areas for improvement with specific examples\n4. Provide actionable recommendations\n5. Assign a score (0-100)\n\nFormat your response as:\n**Strengths:**\n- [specific strength with example from analysis]\n\n**Areas for Improvement:**\n- [specific area with why it matters]\n\n**Recommendations:**\n- [actionable next steps]\n\n**Score: X/100**\n**Justification:** [brief rationale]",
+      "variables": [
+        "case_title",
+        "case_context",
+        "student_analysis",
+        "rubric"
+      ]
+    },
+    "socratic_question": {
+      "template": "You are using the Socratic method to help a student discover an AI strategy concept.\n\nStudent's Question: {question}\nStudent's Current Understanding: {current_understanding}\nTarget Concept: {target_concept}\nLearning Objective: {learning_objective}\n\nGenerate a thought-provoking question that:\n1. Guides the student toward the target concept\n2. Builds on their current understanding\n3. Encourages critical thinking\n4. Relates to real-world business scenarios\n\nKeep the question clear and focused. Avoid giving away the answer.",
+      "variables": [
+        "question",
+        "current_understanding",
+        "target_concept",
+        "learning_objective"
+      ]
+    }
+  },
+  "evaluation_framework": {
+    "response_quality_metrics": [
+      {
+        "metric": "Accuracy",
+        "description": "Response is factually correct per course materials",
+        "measurement": "Instructor validation + automated fact checking vs. course content",
+        "target": "95%+ accuracy rate"
+      },
+      {
+        "metric": "Relevance",
+        "description": "Response directly addresses student question",
+        "measurement": "Student feedback + semantic similarity to question",
+        "target": "90%+ relevance score"
+      },
+      {
+        "metric": "Clarity",
+        "description": "Response is understandable at graduate level",
+        "measurement": "Readability score + student follow-up rate",
+        "target": "Flesch-Kincaid grade 14-16, <20% follow-up clarification rate"
+      },
+      {
+        "metric": "Helpfulness",
+        "description": "Response aids student learning",
+        "measurement": "Student thumbs up/down + subsequent performance",
+        "target": "80%+ helpful rating"
+      }
+    ],
+    "automated_checks": [
+      "Hallucination detection: Verify all factual claims against course materials",
+      "Citation validation: Ensure referenced sources exist and are relevant",
+      "Completeness: Check response addresses all parts of question",
+      "Safety: Screen for inappropriate content or advice"
+    ],
+    "human_review": {
+      "sampling_rate": "10% of responses reviewed by instructors",
+      "priority_review": "All low-confidence responses, student-flagged responses",
+      "feedback_loop": "Instructor corrections used to improve prompts"
+    }
+  },
+  "memory_and_context_management": {
+    "conversation_memory": {
+      "strategy": "Sliding window with semantic compression",
+      "window_size": "Last 10 turns",
+      "storage": "Redis with 24h TTL",
+      "summarization": "Periodically summarize conversation to maintain long context"
+    },
+    "student_profile_memory": {
+      "persistent_memory": [
+        "Completed modules and concepts",
+        "Mastery scores per topic",
+        "Common misconceptions",
+        "Learning preferences (examples-heavy vs. theory-heavy)",
+        "Interaction patterns (question types, frequency)"
+      ],
+      "storage": "PostgreSQL student profile",
+      "update_frequency": "After each interaction"
+    },
+    "course_context": {
+      "structure": "Hierarchical: Course \u2192 Modules \u2192 Topics \u2192 Concepts",
+      "retrieval": "Vector search for relevant content based on question",
+      "caching": "Frequently accessed materials cached in Redis"
+    }
+  },
+  "safety_and_guardrails": {
+    "content_filtering": {
+      "input": "Filter inappropriate questions, prompt injections",
+      "output": "Screen for harmful advice, off-topic responses",
+      "tools": "OpenAI Moderation API + custom filters"
+    },
+    "scope_limiting": {
+      "stay_in_domain": "Only answer AI strategy related questions",
+      "academic_integrity": "Don't complete assignments, guide thinking instead",
+      "refer_to_instructor": "Redirect complex policy questions to instructor"
+    },
+    "confidence_thresholds": {
+      "high_confidence": ">0.8 - provide answer",
+      "medium_confidence": "0.5-0.8 - provide answer with caveat",
+      "low_confidence": "<0.5 - acknowledge uncertainty, suggest instructor"
+    },
+    "prompt_injection_defense": [
+      "Input sanitization",
+      "Clear system prompt boundaries",
+      "Output validation",
+      "Rate limiting on unusual patterns"
+    ]
+  },
+  "personalization_strategy": {
+    "adaptive_difficulty": {
+      "approach": "Adjust explanation complexity based on student level",
+      "levels": [
+        "Novice",
+        "Intermediate",
+        "Advanced"
+      ],
+      "determination": "Based on completed modules + quiz performance",
+      "adaptation": "More examples for novice, more depth for advanced"
+    },
+    "learning_style_adaptation": {
+      "visual_learners": "Include diagram descriptions, visual metaphors",
+      "example_driven": "Heavy use of business case examples",
+      "theory_driven": "More conceptual frameworks, research citations"
+    },
+    "pacing": {
+      "fast_track": "Students who master quickly get advanced topics suggested",
+      "standard": "Follow curriculum sequence",
+      "remedial": "Additional practice on struggling concepts before advancing"
+    }
+  },
+  "model_selection": {
+    "primary_model": {
+      "name": "GPT-4 Turbo",
+      "use_cases": [
+        "Complex explanations",
+        "Case study feedback",
+        "Socratic tutoring"
+      ],
+      "rationale": "Best reasoning ability for nuanced educational content",
+      "cost": "~$0.01-0.03 per interaction"
+    },
+    "secondary_model": {
+      "name": "Claude 3.5 Sonnet",
+      "use_cases": [
+        "Longer context needs",
+        "Detailed feedback"
+      ],
+      "rationale": "200K token context window for comprehensive case studies",
+      "cost": "~$0.003-0.015 per interaction"
+    },
+    "fallback_model": {
+      "name": "GPT-3.5 Turbo",
+      "use_cases": [
+        "Simple factual questions",
+        "FAQ"
+      ],
+      "rationale": "Cost optimization for straightforward queries",
+      "cost": "~$0.001-0.002 per interaction"
+    },
+    "selection_logic": "Route based on question complexity + context length + budget"
+  },
+  "cost_optimization": {
+    "caching": "Cache responses to common questions (FAQ)",
+    "prompt_optimization": "Minimize tokens while maintaining quality",
+    "model_routing": "Use cheaper models for simpler queries",
+    "batch_processing": "Batch analytics queries where latency acceptable",
+    "monitoring": "Real-time cost tracking with budget alerts"
+  },
+  "next_steps": [
+    "Implement prompt templates in LangChain",
+    "Set up evaluation pipeline for response quality",
+    "Create instructor review dashboard",
+    "Develop prompt testing framework",
+    "QA: Create test cases for AI response validation"
+  ]
+}

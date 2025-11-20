@@ -1,0 +1,405 @@
+{
+  "agent": "system_architect",
+  "task_id": "task_0002",
+  "deliverable": "architecture_design",
+  "system_overview": {
+    "architecture_pattern": "Microservices with Event-Driven Communication",
+    "deployment_model": "Cloud-native on AWS",
+    "scalability_approach": "Horizontal scaling with auto-scaling groups",
+    "data_strategy": "Hybrid - Relational for user data, Vector DB for semantic search"
+  },
+  "components": [
+    {
+      "name": "API Gateway",
+      "purpose": "Single entry point for all client requests",
+      "technology": "AWS API Gateway + Lambda",
+      "responsibilities": [
+        "Request routing",
+        "Authentication/authorization",
+        "Rate limiting",
+        "Request/response transformation"
+      ],
+      "scalability": "Serverless auto-scaling"
+    },
+    {
+      "name": "Tutor Service",
+      "purpose": "Core AI tutoring logic and orchestration",
+      "technology": "Python FastAPI + LangChain",
+      "responsibilities": [
+        "Process student questions",
+        "Orchestrate AI reasoning chains",
+        "Generate personalized responses",
+        "Manage conversation context"
+      ],
+      "scalability": "Containerized (ECS) with auto-scaling"
+    },
+    {
+      "name": "LLM Integration Layer",
+      "purpose": "Interface with AI/LLM providers",
+      "technology": "LangChain + OpenAI/Anthropic APIs",
+      "responsibilities": [
+        "Prompt engineering and management",
+        "LLM API calls with retry logic",
+        "Response parsing and validation",
+        "Cost tracking and optimization"
+      ],
+      "patterns": "Chain-of-thought reasoning, RAG (Retrieval Augmented Generation)"
+    },
+    {
+      "name": "Knowledge Base Service",
+      "purpose": "Store and retrieve course content and context",
+      "technology": "Pinecone/Weaviate (Vector DB) + PostgreSQL",
+      "responsibilities": [
+        "Course material indexing",
+        "Semantic search for relevant content",
+        "Context retrieval for student questions",
+        "Concept relationship mapping"
+      ],
+      "data_model": "Embeddings for semantic search, structured data for course outline"
+    },
+    {
+      "name": "Student Profile Service",
+      "purpose": "Manage student data and learning progress",
+      "technology": "Node.js + PostgreSQL",
+      "responsibilities": [
+        "Student profile management",
+        "Learning path tracking",
+        "Concept mastery scoring",
+        "Interaction history"
+      ],
+      "compliance": "FERPA-compliant data handling, encryption at rest"
+    },
+    {
+      "name": "Analytics Service",
+      "purpose": "Track usage, generate insights and reports",
+      "technology": "Python + TimescaleDB + Apache Superset",
+      "responsibilities": [
+        "Event tracking and aggregation",
+        "Student progress analytics",
+        "Instructor dashboards",
+        "Usage metrics and reporting"
+      ],
+      "features": "Real-time dashboards, scheduled reports, data export"
+    },
+    {
+      "name": "LMS Integration Service",
+      "purpose": "Integrate with Canvas and other LMS platforms",
+      "technology": "Python + LTI 1.3 libraries",
+      "responsibilities": [
+        "LTI 1.3 authentication",
+        "Grade passback",
+        "Deep linking",
+        "User provisioning"
+      ],
+      "standards": "IMS LTI 1.3, LTI Advantage"
+    },
+    {
+      "name": "Frontend Application",
+      "purpose": "Student and instructor user interfaces",
+      "technology": "React + TypeScript + TailwindCSS",
+      "responsibilities": [
+        "Chat interface for Q&A",
+        "Progress dashboards",
+        "Case study interface",
+        "Instructor analytics views"
+      ],
+      "deployment": "S3 + CloudFront CDN"
+    },
+    {
+      "name": "Cache Layer",
+      "purpose": "Improve performance and reduce costs",
+      "technology": "Redis",
+      "responsibilities": [
+        "Frequently asked questions cache",
+        "User session management",
+        "Rate limiting state",
+        "LLM response caching"
+      ],
+      "strategy": "Cache-aside pattern with TTL"
+    }
+  ],
+  "data_flow": {
+    "student_question_flow": [
+      "1. Student submits question via Frontend",
+      "2. API Gateway authenticates and routes to Tutor Service",
+      "3. Tutor Service checks Redis cache for similar recent questions",
+      "4. If cache miss, retrieve student context from Student Profile Service",
+      "5. Query Knowledge Base Service for relevant course content (RAG)",
+      "6. Construct prompt with context + question + relevant content",
+      "7. LLM Integration Layer calls OpenAI/Claude API",
+      "8. Parse and validate LLM response",
+      "9. Update Student Profile with interaction",
+      "10. Send event to Analytics Service",
+      "11. Cache response in Redis",
+      "12. Return response to Frontend"
+    ],
+    "analytics_flow": [
+      "1. All services emit events to Analytics Service (async)",
+      "2. Analytics Service aggregates events in TimescaleDB",
+      "3. Scheduled jobs compute metrics (concept mastery, engagement, etc.)",
+      "4. Instructor accesses dashboard via Frontend",
+      "5. API Gateway routes to Analytics Service",
+      "6. Analytics Service queries pre-computed metrics",
+      "7. Returns formatted data to Frontend for visualization"
+    ],
+    "lms_integration_flow": [
+      "1. Student clicks 'AI Tutor' in Canvas",
+      "2. Canvas redirects to LMS Integration Service with LTI launch",
+      "3. Service validates LTI signature and parameters",
+      "4. Creates/updates student profile in Student Profile Service",
+      "5. Generates session token",
+      "6. Redirects to Frontend with session token",
+      "7. Frontend loads with authenticated student context"
+    ]
+  },
+  "api_contracts": {
+    "tutor_api": {
+      "base_url": "/api/v1/tutor",
+      "endpoints": [
+        {
+          "path": "/chat",
+          "method": "POST",
+          "description": "Submit student question and get AI tutor response",
+          "request": {
+            "question": "string (required)",
+            "context": "object (optional) - conversation history",
+            "topic": "string (optional) - current topic/module"
+          },
+          "response": {
+            "answer": "string - AI tutor response",
+            "sources": "array - relevant course materials referenced",
+            "confidence": "number - confidence score 0-1",
+            "follow_up_questions": "array - suggested follow-up questions"
+          }
+        },
+        {
+          "path": "/case-study",
+          "method": "POST",
+          "description": "Submit case study analysis for feedback",
+          "request": {
+            "case_id": "string",
+            "analysis": "string - student's analysis"
+          },
+          "response": {
+            "feedback": "string - detailed feedback",
+            "score": "number - 0-100",
+            "strengths": "array - what student did well",
+            "improvements": "array - areas for improvement"
+          }
+        }
+      ]
+    },
+    "analytics_api": {
+      "base_url": "/api/v1/analytics",
+      "endpoints": [
+        {
+          "path": "/student/{student_id}/progress",
+          "method": "GET",
+          "description": "Get student progress across all topics",
+          "response": {
+            "overall_progress": "number - percentage",
+            "topics": "array - per-topic mastery scores",
+            "engagement_metrics": "object - time spent, questions asked, etc."
+          }
+        },
+        {
+          "path": "/course/{course_id}/insights",
+          "method": "GET",
+          "description": "Get instructor insights for entire course",
+          "response": {
+            "class_performance": "object - aggregate metrics",
+            "struggling_concepts": "array - concepts with low mastery",
+            "at_risk_students": "array - students needing intervention"
+          }
+        }
+      ]
+    }
+  },
+  "technology_stack": {
+    "frontend": {
+      "framework": "React 18 with TypeScript",
+      "state_management": "Zustand",
+      "styling": "TailwindCSS + Headless UI",
+      "build": "Vite",
+      "testing": "Jest + React Testing Library"
+    },
+    "backend": {
+      "primary_language": "Python 3.11",
+      "api_framework": "FastAPI",
+      "ai_framework": "LangChain",
+      "async": "asyncio + aiohttp",
+      "testing": "pytest + pytest-asyncio"
+    },
+    "data": {
+      "relational_db": "PostgreSQL 15 (RDS)",
+      "vector_db": "Pinecone (managed)",
+      "cache": "Redis 7 (ElastiCache)",
+      "time_series": "TimescaleDB (PostgreSQL extension)"
+    },
+    "ai_ml": {
+      "llm_primary": "OpenAI GPT-4",
+      "llm_backup": "Anthropic Claude 3.5 Sonnet",
+      "embeddings": "OpenAI text-embedding-ada-002",
+      "framework": "LangChain + LangSmith"
+    },
+    "infrastructure": {
+      "cloud": "AWS",
+      "compute": "ECS Fargate for services, Lambda for functions",
+      "storage": "S3 for static assets and backups",
+      "cdn": "CloudFront",
+      "monitoring": "CloudWatch + Datadog",
+      "logging": "CloudWatch Logs + ELK Stack"
+    }
+  },
+  "security_architecture": {
+    "authentication": {
+      "lms_users": "LTI 1.3 OAuth 2.0",
+      "direct_access": "JWT with refresh tokens",
+      "session_management": "Redis-backed sessions"
+    },
+    "authorization": {
+      "model": "RBAC (Role-Based Access Control)",
+      "roles": [
+        "student",
+        "instructor",
+        "admin"
+      ],
+      "enforcement": "Middleware at API Gateway + service level"
+    },
+    "data_protection": {
+      "in_transit": "TLS 1.3 for all connections",
+      "at_rest": "AES-256 encryption for PII in database",
+      "pii_handling": "Separate encrypted fields for FERPA compliance",
+      "data_retention": "7 years per FERPA requirements"
+    },
+    "compliance": {
+      "ferpa": "Student data isolation, consent tracking, audit logs",
+      "gdpr": "Data export, right to deletion, consent management",
+      "accessibility": "WCAG 2.1 Level AA compliance"
+    }
+  },
+  "scalability_and_performance": {
+    "horizontal_scaling": {
+      "tutor_service": "Auto-scale based on CPU/request count",
+      "api_gateway": "Serverless auto-scaling",
+      "database": "Read replicas for analytics queries"
+    },
+    "caching_strategy": {
+      "llm_responses": "Cache common questions for 24h",
+      "course_content": "Cache with invalidation on updates",
+      "user_sessions": "Redis TTL-based"
+    },
+    "performance_targets": {
+      "p95_response_time": "< 3 seconds for tutor queries",
+      "p99_response_time": "< 5 seconds",
+      "throughput": "1000+ concurrent users",
+      "availability": "99.5% uptime SLA"
+    },
+    "cost_optimization": {
+      "llm_costs": "Caching, prompt optimization, model selection",
+      "compute": "Serverless for variable loads, reserved for baseline",
+      "storage": "S3 lifecycle policies, database optimization"
+    }
+  },
+  "deployment_architecture": {
+    "environments": [
+      "dev",
+      "staging",
+      "production"
+    ],
+    "ci_cd": "GitHub Actions \u2192 ECR \u2192 ECS deployment",
+    "infrastructure_as_code": "Terraform for AWS resources",
+    "database_migrations": "Alembic (Python) versioned migrations",
+    "feature_flags": "LaunchDarkly for gradual rollouts",
+    "monitoring": "Datadog for APM, CloudWatch for infrastructure"
+  },
+  "adr": {
+    "title": "Use RAG (Retrieval Augmented Generation) for Contextual Tutoring",
+    "decision": "Implement RAG pattern with vector database for course content retrieval",
+    "rationale": "RAG allows AI tutor to provide accurate, course-specific answers by grounding LLM responses in actual course materials, reducing hallucinations and ensuring educational accuracy",
+    "alternatives_considered": [
+      "Fine-tuning LLM on course content - rejected due to cost and maintenance",
+      "Rule-based system - rejected due to lack of flexibility",
+      "Pure LLM without RAG - rejected due to accuracy concerns"
+    ],
+    "consequences": {
+      "positive": [
+        "Accurate responses grounded in course materials",
+        "Easy to update content without retraining",
+        "Explainable (can cite sources)",
+        "Lower hallucination rate"
+      ],
+      "negative": [
+        "Additional infrastructure (vector database)",
+        "More complex system architecture",
+        "Slightly higher latency (retrieval step)"
+      ]
+    },
+    "implementation_notes": "Use Pinecone for vector DB, OpenAI embeddings, LangChain for orchestration"
+  },
+  "risk_assessment": [
+    {
+      "risk": "LLM response accuracy and hallucinations",
+      "severity": "High",
+      "probability": "Medium",
+      "mitigation": [
+        "RAG pattern to ground responses in course materials",
+        "Confidence scoring on responses",
+        "Instructor review dashboard for monitoring",
+        "Fallback to 'I don't know' for low confidence"
+      ]
+    },
+    {
+      "risk": "LLM API costs exceed budget",
+      "severity": "High",
+      "probability": "Medium",
+      "mitigation": [
+        "Aggressive caching of common questions",
+        "Prompt optimization to reduce token usage",
+        "Usage monitoring and alerts",
+        "Budget caps and rate limiting"
+      ]
+    },
+    {
+      "risk": "Student data privacy breach",
+      "severity": "Critical",
+      "probability": "Low",
+      "mitigation": [
+        "Encryption at rest and in transit",
+        "Regular security audits",
+        "FERPA compliance review",
+        "Minimal data collection principle",
+        "Data anonymization for analytics"
+      ]
+    },
+    {
+      "risk": "LMS integration failures",
+      "severity": "Medium",
+      "probability": "Medium",
+      "mitigation": [
+        "Comprehensive LTI 1.3 testing",
+        "Fallback to direct login",
+        "Detailed error logging",
+        "Support for multiple LMS platforms"
+      ]
+    },
+    {
+      "risk": "Scalability issues during peak usage",
+      "severity": "Medium",
+      "probability": "Low",
+      "mitigation": [
+        "Load testing before launch",
+        "Auto-scaling configurations",
+        "Caching strategy",
+        "Graceful degradation plan"
+      ]
+    }
+  ],
+  "next_steps": [
+    "AI Engineer: Design prompt templates and reasoning chains for tutoring",
+    "Backend Engineer: Implement Tutor Service and LLM Integration",
+    "Frontend Engineer: Build chat interface and dashboard UI",
+    "DevOps: Set up AWS infrastructure and CI/CD pipeline",
+    "QA Engineer: Create comprehensive test plan including LLM output validation"
+  ]
+}
