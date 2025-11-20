@@ -653,7 +653,7 @@
         "description": "Implement RAG pattern with vector database for course content retrieval",
         "rationale": "RAG allows AI tutor to provide accurate, course-specific answers by grounding LLM responses in actual course materials, reducing hallucinations and ensuring educational accuracy",
         "decided_by": "system_architect",
-        "timestamp": "2025-11-20T21:57:24.817388",
+        "timestamp": "2025-11-20T23:02:18.634878",
         "metadata": {
           "affects": [
             "ai_engineer",
@@ -699,8 +699,8 @@
       "assigned_to": "product_manager",
       "status": "completed",
       "dependencies": [],
-      "created_at": "2025-11-20T21:57:24.816380",
-      "updated_at": "2025-11-20T21:57:24.816459",
+      "created_at": "2025-11-20T23:02:18.633852",
+      "updated_at": "2025-11-20T23:02:18.633911",
       "output": {
         "agent": "product_manager",
         "task_id": "task_0001",
@@ -953,8 +953,8 @@
       "dependencies": [
         "task_0001"
       ],
-      "created_at": "2025-11-20T21:57:24.817332",
-      "updated_at": "2025-11-20T21:57:24.817384",
+      "created_at": "2025-11-20T23:02:18.634842",
+      "updated_at": "2025-11-20T23:02:18.634875",
       "output": {
         "agent": "system_architect",
         "task_id": "task_0002",
@@ -1372,8 +1372,8 @@
         "task_0001",
         "task_0002"
       ],
-      "created_at": "2025-11-20T21:57:24.818232",
-      "updated_at": "2025-11-20T21:57:24.818270",
+      "created_at": "2025-11-20T23:02:18.635806",
+      "updated_at": "2025-11-20T23:02:18.635851",
       "output": {
         "agent": "ai_engineer",
         "task_id": "task_0003",
