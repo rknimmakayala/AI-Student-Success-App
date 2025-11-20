@@ -1,0 +1,24 @@
+# Multi-Agent System Dependencies
+
+# Core Python dependencies (Python 3.8+)
+# Note: The base system uses only Python standard library
+
+# Optional: For LLM integration
+# openai>=1.0.0              # OpenAI API
+# anthropic>=0.18.0          # Anthropic Claude API
+# langchain>=0.1.0           # LangChain framework
+# langchain-openai>=0.0.5    # LangChain OpenAI integration
+# langchain-anthropic>=0.0.1 # LangChain Anthropic integration
+
+# Optional: For advanced features
+# pydantic>=2.0.0            # Data validation
+# redis>=4.5.0               # For distributed memory/caching
+# sqlalchemy>=2.0.0          # For persistent storage
+# fastapi>=0.100.0           # For API server
+# uvicorn>=0.22.0            # ASGI server for FastAPI
+
+# Development dependencies
+# pytest>=7.3.0              # Testing framework
+# black>=23.0.0              # Code formatting
+# mypy>=1.3.0                # Type checking
+# pylint>=2.17.0             # Linting
