@@ -1,0 +1,5 @@
+scenario,status,crude_to_process,gasoline_produced,diesel_produced,total_revenue,total_cost,profit,capacity_utilization,profit_per_barrel
+Best Case,optimal,100000.0,45000.0,35000.0,7825000.0,5445000.0,2380000.0,100.0,23.8
+Most Likely,optimal,100000.0,45000.0,35000.0,7025000.0,6550000.0,475000.0,100.0,4.75
+Worst Case,optimal,22222.22,10000.0,7777.78,1383333.33,1855000.0,-471666.67,22.22,-21.22
+High Volatility,optimal,22222.22,10000.0,7777.78,1572222.22,1716666.67,-144444.44,22.22,-6.5
