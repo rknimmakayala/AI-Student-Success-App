@@ -1,0 +1,6 @@
+scenario,status,crude_to_process,gasoline_produced,diesel_produced,total_revenue,total_cost,profit,capacity_utilization,profit_per_barrel
+Low Demand,optimal,66666.67,30000.0,23333.33,4683333.33,4383333.33,300000.0,66.67,4.5
+Normal Demand,optimal,100000.0,45000.0,35000.0,7025000.0,6550000.0,475000.0,100.0,4.75
+High Demand,optimal,100000.0,45000.0,35000.0,7025000.0,6550000.0,475000.0,100.0,4.75
+Gasoline Heavy,optimal,85714.29,38571.43,30000.0,6021428.57,5621428.57,400000.0,85.71,4.67
+Diesel Heavy,optimal,88888.89,40000.0,31111.11,6244444.44,5827777.78,416666.67,88.89,4.69

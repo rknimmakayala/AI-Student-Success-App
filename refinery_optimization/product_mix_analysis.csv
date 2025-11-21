@@ -1,0 +1,5 @@
+Scenario,Gasoline Price,Diesel Price,Gasoline Produced,Diesel Produced,Mix Ratio (G:D),Profit
+Equal Prices,85,85,45000.0,35000.0,1.29,250000.0
+Gasoline Premium,95,80,45000.0,35000.0,1.29,525000.0
+Diesel Premium,85,95,45000.0,35000.0,1.29,600000.0
+High Margin,100,95,45000.0,35000.0,1.29,1275000.0
