@@ -12,6 +12,8 @@ Features:
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
@@ -19,6 +21,7 @@ from enum import Enum
 import json
 import logging
 import uuid
+import os
 from collections import deque
 
 # Configure logging
@@ -698,6 +701,24 @@ async def health_check():
         "conversations_active": len(state.conversations),
         "queue_length": len(state.advisor_queue)
     }
+
+
+# ============================================================================
+# Web Interface - Static Files
+# ============================================================================
+
+# Serve static files (HTML/CSS/JS)
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+@app.get("/")
+async def read_root():
+    """Serve the main web interface"""
+    index_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Enrollment FAQ Chatbot API", "docs": "/docs"}
 
 
 # ============================================================================
