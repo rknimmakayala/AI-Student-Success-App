@@ -13,7 +13,7 @@ Features:
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
 import json
@@ -95,7 +95,7 @@ class AdvisorHandoffResponse(BaseModel):
     advisor_name: str
     conversation_history: List[Message]
     student_profile: StudentProfile
-    bot_notes: Dict[str, any]
+    bot_notes: Dict[str, Any]
 
 # ============================================================================
 # In-Memory Storage (Production: Use Redis/PostgreSQL)
