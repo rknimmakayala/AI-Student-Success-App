@@ -1,0 +1,10 @@
+# Streamlit App Requirements
+streamlit>=1.28.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# These are only needed if running the FastAPI backend locally
+# For Streamlit Cloud deployment, the backend should be deployed separately
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
